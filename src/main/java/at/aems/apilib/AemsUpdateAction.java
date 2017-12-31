@@ -1,18 +1,3 @@
-/**
-Copyright 2017 Niklas Graf
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
 package at.aems.apilib;
 
 import java.util.HashMap;
@@ -29,8 +14,8 @@ public class AemsUpdateAction extends AbstractAemsAction {
 	private transient Object idValue;
 	private transient Map<String, Object> updateData;
 	
-	public AemsUpdateAction(int user, String auth) {
-		super(user, auth, "UPDATE");
+	public AemsUpdateAction(AemsUser user) {
+		super(user, "UPDATE");
 		updateData = new HashMap<String, Object>();
 	}
 	
@@ -49,11 +34,9 @@ public class AemsUpdateAction extends AbstractAemsAction {
 
 	@Override
 	public JsonElement serializeData() {
-		if(tableName == null) {
-			throw new IllegalArgumentException("Table name cannot be null! Set it using #setTable(String name)");
-		}
-		if(idColumn == null || idValue == null) {
-			throw new IllegalArgumentException("Please specify an ID column and a associated value!");
+		
+		if(idColumn == null || tableName == null) {
+			throw new IllegalArgumentException("Please specify a table name and an identifier column name!");
 		}
 		
 		JsonObject data = new JsonObject();
