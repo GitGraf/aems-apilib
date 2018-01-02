@@ -1,6 +1,5 @@
 # aems-apilib
-This library is used to generate the JSON-Body that will be sent to the AEMS-API. Note that this library does not (yet)
-support the actual API communication. 
+This library is used to generate the JSON-Body that will be sent to the AEMS-API. It also provides methods to communicate to the API.
 
 # General usage
 To perform an action that requires authentication, you must supply the users credentials. You can do so by creating an instance
@@ -15,6 +14,15 @@ The authentication string is used to authorize at the AEMS-API. It is calculated
 By default, a random salt will be applied to the users authentication string. If you wish to disable it, you can do so by calling
 ```java
 myAction.disableSalt();
+```
+# API-Communication
+You can call the API either by using the static methods of the `AemsAPI` class or by invoking the `call(url)` method on your Action objects.
+```java
+JsonElement result = AemsAPI.call("https://my-api.com", "GET", action.toJson());	// Tries to json parse the response right away
+String result2 = AemsAPI.callRaw("https://my-api.com", "GET", action.toJson());		// Returns the response as string
+
+// Or call the API directly from your Action objects
+JsonElement response = insertAction.call("https://my-api.com");
 ```
 
 # Examples
