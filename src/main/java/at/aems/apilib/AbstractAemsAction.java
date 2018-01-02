@@ -15,6 +15,7 @@
 */
 package at.aems.apilib;
 
+import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.Random;
 
@@ -22,6 +23,7 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 public abstract class AbstractAemsAction {
 	
@@ -68,6 +70,8 @@ public abstract class AbstractAemsAction {
 	
 	public abstract JsonElement serializeData();
 	
+	public abstract String getHttpVerb();
+	
 	private String createSalt() {
 		Random rand = new SecureRandom();
 		StringBuffer buf = new StringBuffer();
@@ -76,5 +80,17 @@ public abstract class AbstractAemsAction {
 			buf.append(s.charAt(rand.nextInt(s.length())));
 		}
 		return buf.toString();
+	}
+	
+	public JsonElement call(String url) {
+		String method = getHttpVerb();
+		String body = toJson();
+		try {
+			return AemsAPI.call(url, method, body);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return new JsonPrimitive("An error has occured: " + e.getClass().getName() + ": " + e.getMessage());
+		}
+		
 	}
 }

@@ -15,10 +15,13 @@
 */
 package at.aems.apilib;
 
+import java.io.IOException;
+
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 public abstract class AemsNoAuthAction {
 	
@@ -42,5 +45,17 @@ public abstract class AemsNoAuthAction {
 		object.add("data", serializeData());
 		return builder.create().toJson(object);
 				
+	}
+	
+	public JsonElement call(String url) {
+		String method = "POST";
+		String body = toJson();
+		try {
+			return AemsAPI.call(url, method, body);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return new JsonPrimitive("An error has occured. Exception: " + e.getMessage());
+		}
+		
 	}
 }

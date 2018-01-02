@@ -35,4 +35,9 @@ public class AemsQueryAction extends AbstractAemsAction {
 		return new JsonPrimitive(graphQlQuery);
 	}
 
+	@Override
+	public String getHttpVerb() {
+		return "POST";
+	}
+
 }

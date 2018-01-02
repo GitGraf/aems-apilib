@@ -71,4 +71,9 @@ public class AemsUpdateAction extends AbstractAemsAction {
 		return data;
 	}
 
+	@Override
+	public String getHttpVerb() {
+		return "PUT";
+	}
+
 }
