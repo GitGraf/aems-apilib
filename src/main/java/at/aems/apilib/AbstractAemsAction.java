@@ -42,7 +42,7 @@ public abstract class AbstractAemsAction {
 				.setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES);
 	}
 	
-	public String toJson() {
+	public JsonObject toJsonObject() {
 		JsonObject object = new JsonObject();
 		object.addProperty("user_id", user.getUserId());
 		String salt = isSaltEnabled() ? createSalt() : null;
@@ -53,7 +53,11 @@ public abstract class AbstractAemsAction {
 		object.addProperty("action", action);
 		JsonElement data = serializeData();
 		object.add("data", data);
-		return builder.create().toJson(object);
+		return object;
+	}
+	
+	public String toJson() {
+		return builder.create().toJson(toJsonObject());
 	}
 	
 	public boolean isSaltEnabled() {
