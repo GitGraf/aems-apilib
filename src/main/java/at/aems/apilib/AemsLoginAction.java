@@ -24,20 +24,16 @@ import java.util.Random;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-public class AemsLoginAction extends AemsNoAuthAction {
+import at.aems.apilib.crypto.EncryptionType;
+
+public class AemsLoginAction extends AbstractAemsAction {
 
 	private String username;
 	private String password;
 	private String salt;
 	
-	public AemsLoginAction() {
-		this(null, null);
-	}
-	
-	public AemsLoginAction(String username, String password) {
-		super("LOGIN");
-		this.username = username;
-		this.password = password;
+	public AemsLoginAction(EncryptionType encryption) {
+		super(null, "LOGIN", encryption);
 		this.salt = createSalt();
 	}
 	
@@ -52,7 +48,7 @@ public class AemsLoginAction extends AemsNoAuthAction {
 	@Override
 	public JsonElement serializeData() {
 		JsonObject obj = new JsonObject();
-		obj.addProperty("username", username);
+		obj.addProperty("usr", username);
 		obj.addProperty("auth_str", getAuthString());
 		obj.addProperty("salt", salt);
 		return obj;
@@ -84,6 +80,11 @@ public class AemsLoginAction extends AemsNoAuthAction {
 			buf.append((char)(rand.nextInt(25) + 65));
 		}
 		return buf.toString();
+	}
+
+	@Override
+	public String getHttpVerb() {
+		return "POST";
 	}
 
 }

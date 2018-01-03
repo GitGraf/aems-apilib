@@ -24,14 +24,16 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import at.aems.apilib.crypto.EncryptionType;
+
 public class AemsInsertAction extends AbstractAemsAction {
 
 	private transient String tableName;
 	private transient List<Map<String, Object>> insertData;
 	private transient Map<String, Object> currentMap;
 	
-	public AemsInsertAction(AemsUser user) {
-		super(user, "INSERT");
+	public AemsInsertAction(AemsUser user, EncryptionType encryption) {
+		super(user, "INSERT", encryption);
 		insertData = new ArrayList<Map<String,Object>>();
 	}
 	

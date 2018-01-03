@@ -1,3 +1,18 @@
+/**
+  Copyright 2017 Niklas Graf
+	
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+*/
 package at.aems.apilib;
 
 import java.io.BufferedReader;
@@ -7,36 +22,32 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonPrimitive;
-
 /**
  * Provides static convenience methods to interact with the API.
  * @author Niggi
  */
 public class AemsAPI {
 	
-	public static JsonElement call(String url, String httpMethod, String body) throws IOException {
-		String rawResult = callRaw(url, httpMethod, body);
-		try {
-			return new JsonParser().parse(rawResult);
-		} catch(JsonParseException ex) {
-			return new JsonPrimitive("Error: Response is not valid JSON -> " + rawResult);
-		}
+	private static String BASE_URL = null;
+	
+	public static void setUrl(String url) {
+		BASE_URL = url;
 	}
 	
-	public static String callRaw(String url, String httpMethod, String body) throws IOException {
+	public static String call(AbstractAemsAction action, byte[] encryptionKey) throws IOException {
+		if(BASE_URL == null)
+			throw new IllegalStateException("Base URL cannot be null! Set it using AemsAPI.setUrl(url)");
+		
 		HttpURLConnection connection;
-		URL apiUrl = new URL(url);
+		URL apiUrl = new URL(BASE_URL);
+		String encryptedJson = action.toJson(encryptionKey);
 		connection = (HttpURLConnection) apiUrl.openConnection();
 		
-		connection.setRequestMethod(httpMethod);
+		connection.setRequestMethod(action.getHttpVerb());
 		connection.setRequestProperty("Content-Type", "application/json");
-		connection.setRequestProperty("Content-Length", Integer.toString(body.length()));
+		connection.setRequestProperty("Content-Length", Integer.toString(encryptedJson.length()));
 		connection.setDoOutput(true);
-		connection.getOutputStream().write(body.getBytes("UTF-8"));
+		connection.getOutputStream().write(encryptedJson.getBytes("UTF-8"));
 		
 		connection.connect();
 		

@@ -18,15 +18,17 @@ package at.aems.apilib;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-public class AemsRegisterAction extends AemsNoAuthAction {
+import at.aems.apilib.crypto.EncryptionType;
+
+public class AemsRegisterAction extends AbstractAemsAction {
 
 	private String username;
 	private String password;
 	private String email;
 	private String postalCode;
 	
-	public AemsRegisterAction() {
-		super("REGISTER");
+	public AemsRegisterAction(EncryptionType encryption) {
+		super(null, "REGISTER", encryption);
 	}
 
 	public String getUsername() {
@@ -69,6 +71,11 @@ public class AemsRegisterAction extends AemsNoAuthAction {
 		object.addProperty("email", email);
 		object.addProperty("postcode", postalCode);
 		return object;
+	}
+
+	@Override
+	public String getHttpVerb() {
+		return "POST";
 	}
 	
 }

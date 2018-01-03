@@ -15,15 +15,16 @@
 */
 package at.aems.apilib;
 
-import java.io.IOException;
 import java.security.SecureRandom;
+import java.util.Base64;
 import java.util.Random;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
+
+import at.aems.apilib.crypto.EncryptionType;
 
 public abstract class AbstractAemsAction {
 	
@@ -31,45 +32,87 @@ public abstract class AbstractAemsAction {
 	private String action;
 	private boolean saltEnabled;
 	protected GsonBuilder builder;
-
+	private EncryptionType encryptionType;
 	
-	public AbstractAemsAction(AemsUser user, String action) {
+	public AbstractAemsAction(AemsUser user, String action, EncryptionType encryption) {
 		this.user = user;
 		this.action = action;
-		this.saltEnabled = true;
+		this.saltEnabled = false;
+		this.encryptionType = encryption;
 		builder = new GsonBuilder().setPrettyPrinting()
 				.serializeNulls()
+				.disableHtmlEscaping()		// In order to keep gson from serializing '=' into '\u003d'
 				.setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES);
 	}
 	
 	public JsonObject toJsonObject() {
 		JsonObject object = new JsonObject();
-		object.addProperty("user_id", user.getUserId());
-		String salt = isSaltEnabled() ? createSalt() : null;
-		if(isSaltEnabled()) {
-			object.addProperty("salt", salt);
+		if(user != null) {
+			serializeUserCredentials(object);
 		}
-		object.addProperty("auth_str", user.getAuthString(salt));
 		object.addProperty("action", action);
 		JsonElement data = serializeData();
 		object.add("data", data);
 		return object;
 	}
 	
-	public String toJson() {
-		return builder.create().toJson(toJsonObject());
+	private JsonObject serializeUserCredentials(JsonObject object) {
+		object.addProperty("user_id", user.getUserId());
+		String salt = isSaltEnabled() ? createSalt() : null;
+		if(isSaltEnabled()) {
+			object.addProperty("salt", salt);
+		}
+		object.addProperty("auth_str", user.getAuthString(salt));
+		return object;
+	}
+	
+	/**
+	 * Converts this AemsAction object into a JSON string with all neccessary fields.
+	 * @param encryptionKey The key to encrypt the "data" portion of the action.
+	 *        If SSL "encryption" is used, this can be null
+	 * @return The JSON string repesentation of this object
+	 */
+	public String toJson(byte[] encryptionKey) {
+		JsonObject object = toJsonObject();
+		if(encryptionType == EncryptionType.AES) {
+			object.remove("auth_str");		// Auth string is not needed in AES encryption
+		}
+		String data = dataToString(object);
+		byte[] encrypted = encryptionType.getImplementation()
+				.encrypt(encryptionKey, data.getBytes());
+		object.remove("data");
+		object.addProperty("data", bytesToString(encrypted));
+		return builder.create().toJson(object);
+	}
+
+	private String dataToString(JsonObject object) {
+		JsonElement e = object.get("data");
+		if(e.isJsonPrimitive())
+			return e.getAsString();
+		return e.toString();
+	}
+
+	private String bytesToString(byte[] bytes) {
+		if(encryptionType != EncryptionType.SSL) {
+			return Base64.getUrlEncoder().encodeToString(bytes);
+		}
+		return new String(bytes);
 	}
 	
 	public boolean isSaltEnabled() {
 		return saltEnabled;
 	}
 	
-	public void setSaltEnabled(boolean enable) {
-		this.saltEnabled = enable;
-	}
-	
 	public void disableSalt() {
 		this.saltEnabled = false;
+	}
+	
+	public void enableSalt() {
+		this.saltEnabled = true;
+	}
+	
+	public EncryptionType getCrypto() {
+		return this.encryptionType;
 	}
 	
 	public abstract JsonElement serializeData();
@@ -85,16 +128,5 @@ public abstract class AbstractAemsAction {
 		}
 		return buf.toString();
 	}
-	
-	public JsonElement call(String url) {
-		String method = getHttpVerb();
-		String body = toJson();
-		try {
-			return AemsAPI.call(url, method, body);
-		} catch (IOException e) {
-			e.printStackTrace();
-			return new JsonPrimitive("An error has occured: " + e.getClass().getName() + ": " + e.getMessage());
-		}
-		
-	}
+
 }

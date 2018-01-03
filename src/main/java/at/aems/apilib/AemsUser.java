@@ -37,7 +37,7 @@ public class AemsUser {
 	public String getUsername() {
 		return username;
 	}
-
+	
 	public String getPassword() {
 		return password;
 	}
@@ -63,14 +63,12 @@ public class AemsUser {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-512");
             byte[] hash = md.digest(userCredentials.getBytes(StandardCharsets.UTF_8));
-
             StringBuffer sb = new StringBuffer();
             for (int i = 0; i < hash.length; i++) {
                 sb.append(Integer.toString((hash[i] & 0xff) + 0x100, 16)
                         .substring(1));
             }
             return sb.toString();
-
         } catch (NoSuchAlgorithmException ex) {
             ex.printStackTrace();
         }

@@ -18,12 +18,14 @@ package at.aems.apilib;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 
+import at.aems.apilib.crypto.EncryptionType;
+
 public class AemsQueryAction extends AbstractAemsAction {
 
 	private transient String graphQlQuery;
 	
-	public AemsQueryAction(AemsUser user) {
-		super(user, "QUERY");
+	public AemsQueryAction(AemsUser user, EncryptionType encryption) {
+		super(user, "QUERY", encryption);
 	}
 	
 	public void setQuery(String query) {

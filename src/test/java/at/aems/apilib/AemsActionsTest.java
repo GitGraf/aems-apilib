@@ -8,13 +8,19 @@ import org.junit.Test;
 
 import com.google.gson.JsonObject;
 
+import at.aems.apilib.crypto.EncryptionType;
+
 public class AemsActionsTest {
 	
 	private AemsUser testUser = new AemsUser(0, "Test", "user");
+	private byte[] testKey = new byte[16];
+	
+	private static final EncryptionType AES = EncryptionType.AES;
+	private static final EncryptionType SSL = EncryptionType.SSL;
 	
 	@Test
 	public void testInsertAction() {
-		AemsInsertAction insert = new AemsInsertAction(testUser);
+		AemsInsertAction insert = new AemsInsertAction(testUser, AES);
 		insert.setTable("Meters");
 		insert.beginWrite();
 		insert.write("id", "AT0000123");
@@ -35,17 +41,17 @@ public class AemsActionsTest {
 	
 	@Test(expected = IllegalArgumentException.class)
 	public void testInsertActionNoTable() {
-		AemsInsertAction insert = new AemsInsertAction(testUser);
+		AemsInsertAction insert = new AemsInsertAction(testUser, AES);
 		insert.beginWrite();
 		insert.write("column", "data");
 		insert.endWrite();
 		// No table specified, IllegalArgumentException should be thrown
-		insert.toJson();
+		insert.toJson(testKey);
 	}
 	
 	@Test
 	public void testUpdateAction() {
-		AemsUpdateAction update = new AemsUpdateAction(testUser);
+		AemsUpdateAction update = new AemsUpdateAction(testUser, AES);
 		update.setTable("Meters");
 		update.setIdColumn("id", "AT00001");
 		update.write("type", 1);
@@ -58,9 +64,9 @@ public class AemsActionsTest {
 	
 	@Test
 	public void testSalt() {
-		AemsInsertAction insert = new AemsInsertAction(testUser);
+		AemsInsertAction insert = new AemsInsertAction(testUser, AES);
 		insert.setTable("SomeTable");
-		
+		insert.enableSalt();
 		JsonObject obj = insert.toJsonObject();
 		assertTrue("Action should have a salt attribute", obj.has("salt"));
 		

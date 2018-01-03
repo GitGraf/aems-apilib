@@ -22,6 +22,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import at.aems.apilib.crypto.EncryptionType;
+
 public class AemsUpdateAction extends AbstractAemsAction {
 
 	private transient String tableName;
@@ -29,8 +31,8 @@ public class AemsUpdateAction extends AbstractAemsAction {
 	private transient Object idValue;
 	private transient Map<String, Object> updateData;
 	
-	public AemsUpdateAction(AemsUser user) {
-		super(user, "UPDATE");
+	public AemsUpdateAction(AemsUser user, EncryptionType encryption) {
+		super(user, "UPDATE", encryption);
 		updateData = new HashMap<String, Object>();
 	}
 	
