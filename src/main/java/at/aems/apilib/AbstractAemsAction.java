@@ -25,7 +25,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import at.aems.apilib.crypto.EncryptionType;
-
+/**
+ * This class provides a way to generate the JSON body that will be sent
+ * to the AEMS-API. 
+ * @author Niggi
+ */
 public abstract class AbstractAemsAction {
 	
 	private AemsUser user;
@@ -34,6 +38,13 @@ public abstract class AbstractAemsAction {
 	protected GsonBuilder builder;
 	private EncryptionType encryptionType;
 	
+	/**
+	 * Creates a new instance of an Aems Action object.
+	 * @param user The user credentials for authentication, may be null for register or login
+	 * @param action The action parameter string which identifies the purpose of the API call <br/>
+	 *        May be any of: REGISTER, LOGIN, QUERY, INSERT, UPDATE, DELETE
+	 * @param encryption The encryption type to be used for securing sensitive data
+	 */
 	public AbstractAemsAction(AemsUser user, String action, EncryptionType encryption) {
 		this.user = user;
 		this.action = action;
@@ -45,6 +56,12 @@ public abstract class AbstractAemsAction {
 				.setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES);
 	}
 	
+	/**
+	 * Converts the current state of this action object to a
+	 * {@link JsonObject}. Note that none of the elements of this
+	 * JsonObject will be encrypted in any form.
+	 * @return The state of this object in JSON form
+	 */
 	public JsonObject toJsonObject() {
 		JsonObject object = new JsonObject();
 		if(user != null) {
@@ -67,10 +84,14 @@ public abstract class AbstractAemsAction {
 	}
 	
 	/**
-	 * Converts this AemsAction object into a JSON string with all neccessary fields.
-	 * @param encryptionKey The key to encrypt the "data" portion of the action.
-	 *        If SSL "encryption" is used, this can be null
-	 * @return The JSON string repesentation of this object
+	 * Converts the current state of this action object into a
+	 * {@link JsonObject} in {@link String} form. The part of the
+	 * object which holds sensitive data (the "data" object) will
+	 * be encrypted using the implementation of this objects specified
+	 * {@link #encryptionType}.
+	 * @param encryptionKey The key to use for encrypting the data. May be null
+	 * @return A String representation of this object, ready to be transmitted
+	 * to the AEMS-API.
 	 */
 	public String toJson(byte[] encryptionKey) {
 		JsonObject object = toJsonObject();
@@ -111,12 +132,22 @@ public abstract class AbstractAemsAction {
 		this.saltEnabled = true;
 	}
 	
-	public EncryptionType getCrypto() {
+	public EncryptionType getEncryptionType() {
 		return this.encryptionType;
 	}
 	
+	/**
+	 * This method serializes the current state of this objects data
+	 * into JSON form. 
+	 * @return The data of this object
+	 */
 	public abstract JsonElement serializeData();
 	
+	/**
+	 * Returns the request method to be used when connecting
+	 * to the AEMS-API.
+	 * @return The request method to be used
+	 */
 	public abstract String getHttpVerb();
 	
 	private String createSalt() {

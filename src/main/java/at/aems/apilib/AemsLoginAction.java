@@ -37,10 +37,18 @@ public class AemsLoginAction extends AbstractAemsAction {
 		this.salt = createSalt();
 	}
 	
+	/**
+	 * Sets the username to be used for logging in.
+	 * @param user The username
+	 */
 	public void setUsername(String user) {
 		username = user;
 	}
 	
+	/**
+	 * Sets the password to be used for logging in.
+	 * @param pass
+	 */
 	public void setPassword(String pass) {
 		password = pass;
 	}

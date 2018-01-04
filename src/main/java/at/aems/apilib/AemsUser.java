@@ -19,6 +19,10 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+/**
+ * This class is used to represent user credentials in the AEMS system.
+ * @author Niggi
+ */
 public class AemsUser {
 	private int userId;
 	private String username;
@@ -30,14 +34,26 @@ public class AemsUser {
 		this.password = password;
 	}
 
+	/**
+	 * Returns this users internal database id
+	 * @return The user id
+	 */
 	public int getUserId() {
 		return userId;
 	}
 
+	/**
+	 * Returns the username of this user.
+	 * @return The username
+	 */
 	public String getUsername() {
 		return username;
 	}
 	
+	/**
+	 * Returns the plain-text password of this user
+	 * @return The password
+	 */
 	public String getPassword() {
 		return password;
 	}

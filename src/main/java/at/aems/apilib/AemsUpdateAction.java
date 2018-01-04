@@ -36,15 +36,31 @@ public class AemsUpdateAction extends AbstractAemsAction {
 		updateData = new HashMap<String, Object>();
 	}
 	
+	/**
+	 * This method is used to set the name of the database table that
+	 * this action will be modifying. 
+	 * @param tableName The name of the table in question
+	 */
 	public void setTable(String tableName) {
 		this.tableName = tableName;
 	}
 	
+	/**
+	 * This method is used to specify the selection of records in the
+	 * database to be updated by this action. 
+	 * @param columnName The name of the column to be used for the WHERE clause
+	 * @param value The value that the column must have, can be null
+	 */
 	public void setIdColumn(String columnName, Object value) {
 		this.idColumn = columnName;
 		this.idValue = value;
 	}
 	
+	/**
+	 * This method is used to specify which columns should be updated
+	 * @param columnName The column to be updated
+	 * @param value The value to update the column to, may be null
+	 */
 	public void write(String columnName, Object value) {
 		updateData.put(columnName, value);
 	}

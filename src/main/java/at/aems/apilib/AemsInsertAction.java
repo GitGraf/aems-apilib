@@ -37,14 +37,28 @@ public class AemsInsertAction extends AbstractAemsAction {
 		insertData = new ArrayList<Map<String,Object>>();
 	}
 	
+	/**
+	 * This method is used to set the name of the database table that
+	 * this action will be modifying. 
+	 * @param tableName The name of the table in question
+	 */
 	public void setTable(String tableName) {
 		this.tableName = tableName;
 	}
 	
+	/**
+	 * Invoking this method tells the action that a new record is about
+	 * to be written.
+	 */
 	public void beginWrite() {
 		currentMap = new HashMap<String, Object>();
 	}
 	
+	/**
+	 * Adds a column to the record that is currently being constructed.
+	 * @param columnName The name of the column
+	 * @param value The column value
+	 */
 	public void write(String columnName, Object value) {
 		if(currentMap == null) {
 			beginWrite();
@@ -52,6 +66,13 @@ public class AemsInsertAction extends AbstractAemsAction {
 		currentMap.put(columnName, value);
 	}
 	
+	/**
+	 * Invoking this method tells the action object that
+	 * the record that is currently being created is finished. 
+	 * Only when this method is called, the current record will
+	 * be added to the data. Hence, invoking this method after
+	 * finishing writing a record is mandatory.
+	 */
 	public void endWrite() {
 		insertData.add(currentMap);
 		currentMap = null;

@@ -17,6 +17,10 @@ package at.aems.apilib.crypto;
 
 import java.util.Base64;
 
+/**
+ * This class provides functionality as an AES en/decoder
+ * @author Niggi
+ */
 public class CryptoSsl extends AemsCrypto {
 
 	/**

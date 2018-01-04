@@ -28,6 +28,11 @@ public class AemsQueryAction extends AbstractAemsAction {
 		super(user, "QUERY", encryption);
 	}
 	
+	/**
+	 * This method is used to set the GraphQL query which will
+	 * be sent to the API. 
+	 * @param query The GraphQL query to send
+	 */
 	public void setQuery(String query) {
 		this.graphQlQuery = query;
 	}

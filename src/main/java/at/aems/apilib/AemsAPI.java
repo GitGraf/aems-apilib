@@ -34,7 +34,15 @@ public class AemsAPI {
 		BASE_URL = url;
 	}
 	
-	public static String call(AbstractAemsAction action, byte[] encryptionKey) throws IOException {
+	/**
+	 * Dispatches a HTTP request to the {@link #BASE_URL} and returns the plain-text
+	 * result. The body will automatically be encrypted with the encryption key.
+	 * @param action The {@link AbstractAemsAction} to be executed
+	 * @param encryptionKey The key to be used for encrypting sensitive data
+	 * @return The response of the HTTP call
+	 * @throws IOException If an I/O Exception occures (e.g. malformed url)
+	 */
+	public static String call(AbstractAemsAction action, byte[] encryptionKey)throws IOException  {
 		if(BASE_URL == null)
 			throw new IllegalStateException("Base URL cannot be null! Set it using AemsAPI.setUrl(url)");
 		

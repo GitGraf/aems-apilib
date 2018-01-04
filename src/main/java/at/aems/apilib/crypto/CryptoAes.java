@@ -15,9 +15,10 @@
 */
 package at.aems.apilib.crypto;
 
-import at.htlgkr.aems.util.crypto.Decrypter;
-import at.htlgkr.aems.util.crypto.Encrypter;
-
+/**
+ * This class provides functionality as an AES en/decrypter
+ * @author Niggi
+ */
 public class CryptoAes extends AemsCrypto {
 
 	/**
