@@ -70,11 +70,12 @@ public abstract class AbstractAemsAction {
 		object.addProperty("action", action);
 		JsonElement data = serializeData();
 		object.add("data", data);
+		object.addProperty("encryption", encryptionType.name());
 		return object;
 	}
 	
 	private JsonObject serializeUserCredentials(JsonObject object) {
-		object.addProperty("user_id", user.getUserId());
+		object.addProperty("user", user.getUserId());
 		String salt = isSaltEnabled() ? createSalt() : null;
 		if(isSaltEnabled()) {
 			object.addProperty("salt", salt);

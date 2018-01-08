@@ -26,7 +26,10 @@ import java.net.URL;
  * Provides static convenience methods to interact with the API.
  * @author Niggi
  */
-public class AemsAPI {
+public final class AemsAPI {
+        
+        private AemsAPI() {
+        }
 	
 	private static String BASE_URL = null;
 	
