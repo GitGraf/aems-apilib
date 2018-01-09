@@ -22,29 +22,30 @@ import at.aems.apilib.crypto.EncryptionType;
 
 public class AemsQueryAction extends AbstractAemsAction {
 
-	private transient String graphQlQuery;
-	
-	public AemsQueryAction(AemsUser user, EncryptionType encryption) {
-		super(user, "QUERY", encryption);
-	}
-	
-	/**
-	 * This method is used to set the GraphQL query which will
-	 * be sent to the API. 
-	 * @param query The GraphQL query to send
-	 */
-	public void setQuery(String query) {
-		this.graphQlQuery = query;
-	}
+    private transient String graphQlQuery;
 
-	@Override
-	public JsonElement serializeData() {
-		return new JsonPrimitive(graphQlQuery);
-	}
+    public AemsQueryAction(AemsUser user, EncryptionType encryption) {
+        super(user, "QUERY", encryption);
+    }
 
-	@Override
-	public String getHttpVerb() {
-		return "POST";
-	}
+    /**
+     * This method is used to set the GraphQL query which will be sent to the API.
+     * 
+     * @param query
+     *            The GraphQL query to send
+     */
+    public void setQuery(String query) {
+        this.graphQlQuery = query;
+    }
+
+    @Override
+    public JsonElement serializeData() {
+        return new JsonPrimitive(graphQlQuery);
+    }
+
+    @Override
+    public String getHttpVerb() {
+        return "POST";
+    }
 
 }

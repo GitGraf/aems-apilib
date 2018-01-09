@@ -28,50 +28,52 @@ import at.aems.apilib.crypto.EncryptionType;
 
 public class AemsLoginAction extends AbstractAemsAction {
 
-	private String username;
-	private String password;
-	private String salt;
-	
-	public AemsLoginAction(EncryptionType encryption) {
-		super(null, "LOGIN", encryption);
-		this.salt = createSalt();
-	}
-	
-	/**
-	 * Sets the username to be used for logging in.
-	 * @param user The username
-	 */
-	public void setUsername(String user) {
-		username = user;
-	}
-	
-	/**
-	 * Sets the password to be used for logging in.
-	 * @param pass
-	 */
-	public void setPassword(String pass) {
-		password = pass;
-	}
+    private String username;
+    private String password;
+    private String salt;
 
-	@Override
-	public JsonElement serializeData() {
-		JsonObject obj = new JsonObject();
-		obj.addProperty("usr", username);
-		obj.addProperty("auth_str", getAuthString());
-		obj.addProperty("salt", salt);
-		return obj;
-	}
+    public AemsLoginAction(EncryptionType encryption) {
+        super(null, "LOGIN", encryption);
+        this.salt = createSalt();
+    }
 
-	private String getAuthString() {
-		String userCredentials = password + ":" + salt;
+    /**
+     * Sets the username to be used for logging in.
+     * 
+     * @param user
+     *            The username
+     */
+    public void setUsername(String user) {
+        username = user;
+    }
+
+    /**
+     * Sets the password to be used for logging in.
+     * 
+     * @param pass
+     */
+    public void setPassword(String pass) {
+        password = pass;
+    }
+
+    @Override
+    public JsonElement serializeData() {
+        JsonObject obj = new JsonObject();
+        obj.addProperty("usr", username);
+        obj.addProperty("auth_str", getAuthString());
+        obj.addProperty("salt", salt);
+        return obj;
+    }
+
+    private String getAuthString() {
+        String userCredentials = password + ":" + salt;
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-512");
             byte[] hash = md.digest(userCredentials.getBytes(StandardCharsets.UTF_8));
 
             StringBuffer sb = new StringBuffer();
             for (int i = 0; i < hash.length; i++) {
-                sb.append(Integer.toString((hash[i] & 0xff) + 0x100, 16)
-                        .substring(1));
+                sb.append(Integer.toString((hash[i] & 0xff) + 0x100, 16).substring(1));
             }
             return sb.toString();
 
@@ -79,20 +81,20 @@ public class AemsLoginAction extends AbstractAemsAction {
             ex.printStackTrace();
         }
         return null;
-	}
-	
-	private String createSalt() {
-		Random rand = new SecureRandom();
-		StringBuffer buf = new StringBuffer();
-		for(int j = 0; j < 16; j++) {
-			buf.append((char)(rand.nextInt(25) + 65));
-		}
-		return buf.toString();
-	}
+    }
 
-	@Override
-	public String getHttpVerb() {
-		return "POST";
-	}
+    private String createSalt() {
+        Random rand = new SecureRandom();
+        StringBuffer buf = new StringBuffer();
+        for (int j = 0; j < 16; j++) {
+            buf.append((char) (rand.nextInt(25) + 65));
+        }
+        return buf.toString();
+    }
+
+    @Override
+    public String getHttpVerb() {
+        return "POST";
+    }
 
 }

@@ -17,12 +17,14 @@ package at.aems.apilib.crypto;
 
 /**
  * Base class for any class that acts as an encrypter / decrypter.
+ * 
  * @author Niggi
  */
 public abstract class AemsCrypto {
-	public AemsCrypto() {}
-	
-	public abstract byte[] encrypt(byte[] key, byte[] raw);
-	
-	public abstract byte[] decrypt(byte[] key, byte[] raw);
+    public AemsCrypto() {
+    }
+
+    public abstract byte[] encrypt(byte[] key, byte[] raw);
+
+    public abstract byte[] decrypt(byte[] key, byte[] raw);
 }

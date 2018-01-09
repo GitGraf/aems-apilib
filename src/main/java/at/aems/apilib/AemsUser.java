@@ -21,77 +21,80 @@ import java.security.NoSuchAlgorithmException;
 
 /**
  * This class is used to represent user credentials in the AEMS system.
+ * 
  * @author Niggi
  */
 public class AemsUser {
-	private int userId;
-	private String username;
-	private String password;
-	
-	public AemsUser(int userId, String username, String password) {
-		this.userId = userId;
-		this.username = username;
-		this.password = password;
-	}
+    private int userId;
+    private String username;
+    private String password;
 
-	/**
-	 * Returns this users internal database id
-	 * @return The user id
-	 */
-	public int getUserId() {
-		return userId;
-	}
+    public AemsUser(int userId, String username, String password) {
+        this.userId = userId;
+        this.username = username;
+        this.password = password;
+    }
 
-	/**
-	 * Returns the username of this user.
-	 * @return The username
-	 */
-	public String getUsername() {
-		return username;
-	}
-	
-	/**
-	 * Returns the plain-text password of this user
-	 * @return The password
-	 */
-	public String getPassword() {
-		return password;
-	}
-	
-	/**
-	 * Calculates the SHA-512 based authentication string for this user and a
-	 * given salt. If the salt parameter is null or empty, it will not be applied.
-	 * The string will be calculated as follows:
-	 * <blockquote>
-	 *     sha512(userId:username:password:salt)<p>
-	 * or<p>
-	 *     sha512(userId:username:password)<p>
-	 * if no salt is supplied.
-	 * </blockquote>
-	 * @param salt The salt to apply, can be null
-	 * @return The authentification string for a specific salt
-	 */
-	public String getAuthString(String salt) {
-		String userCredentials = userId + ":" + username + ":" + password;
-		if(salt != null && !salt.isEmpty()) {
-			userCredentials = userCredentials + ":" + salt;
-		}
+    /**
+     * Returns this users internal database id
+     * 
+     * @return The user id
+     */
+    public int getUserId() {
+        return userId;
+    }
+
+    /**
+     * Returns the username of this user.
+     * 
+     * @return The username
+     */
+    public String getUsername() {
+        return username;
+    }
+
+    /**
+     * Returns the plain-text password of this user
+     * 
+     * @return The password
+     */
+    public String getPassword() {
+        return password;
+    }
+
+    /**
+     * Calculates the SHA-512 based authentication string for this user and a given
+     * salt. If the salt parameter is null or empty, it will not be applied. The
+     * string will be calculated as follows: <blockquote>
+     * sha512(userId:username:password:salt)
+     * <p>
+     * or
+     * <p>
+     * sha512(userId:username:password)
+     * <p>
+     * if no salt is supplied. </blockquote>
+     * 
+     * @param salt
+     *            The salt to apply, can be null
+     * @return The authentification string for a specific salt
+     */
+    public String getAuthString(String salt) {
+        String userCredentials = userId + ":" + username + ":" + password;
+        if (salt != null && !salt.isEmpty()) {
+            userCredentials = userCredentials + ":" + salt;
+        }
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-512");
             byte[] hash = md.digest(userCredentials.getBytes(StandardCharsets.UTF_8));
             StringBuffer sb = new StringBuffer();
             for (int i = 0; i < hash.length; i++) {
-                sb.append(Integer.toString((hash[i] & 0xff) + 0x100, 16)
-                        .substring(1));
+                sb.append(Integer.toString((hash[i] & 0xff) + 0x100, 16).substring(1));
             }
             return sb.toString();
         } catch (NoSuchAlgorithmException ex) {
             ex.printStackTrace();
         }
         return null;
-	}
-	
-	
-	
-	
+    }
+
 }
