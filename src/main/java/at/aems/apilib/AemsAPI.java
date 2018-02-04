@@ -51,6 +51,11 @@ public final class AemsAPI {
      *             If an I/O Exception occures (e.g. malformed url)
      */
     public static String call(AbstractAemsAction action, byte[] encryptionKey) throws IOException {
+        AemsResponse response = call0(action, encryptionKey);
+        return response.getResponseText();
+    }
+    
+    public static AemsResponse call0(AbstractAemsAction action, byte[] encryptionKey) throws IOException {
         if (BASE_URL == null)
             throw new IllegalStateException("Base URL cannot be null! Set it using AemsAPI.setUrl(url)");
 
@@ -66,9 +71,13 @@ public final class AemsAPI {
         connection.getOutputStream().write(encryptedJson.getBytes("UTF-8"));
 
         connection.connect();
-
+        
         String rawResult = readDataFromStream(connection.getInputStream());
-        return rawResult;
+        return new AemsResponse(connection.getResponseCode(), 
+                connection.getResponseMessage(), 
+                rawResult,
+                action.getEncryptionType(),
+                encryptionKey);
     }
 
     private static String readDataFromStream(InputStream stream) throws IOException {
