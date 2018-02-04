@@ -79,12 +79,25 @@ public class AemsUser {
      * @return The authentification string for a specific salt
      */
     public String getAuthString(String salt) {
+        return createAuthString(this, salt);
+    }
+    
+    /**
+     * This method is used to calculate the authentication string for an AemsUser
+     * @param userId The user id
+     * @param username The username
+     * @param password The password
+     * @param salt Optional salt to be added
+     * @return The authentication string
+     */
+    public static String createAuthString(Integer userId, String username, String password, String salt) {
         String userCredentials = userId + ":" + username + ":" + password;
         if (salt != null && !salt.isEmpty()) {
             userCredentials = userCredentials + ":" + salt;
         }
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-512");
+            
             byte[] hash = md.digest(userCredentials.getBytes(StandardCharsets.UTF_8));
             StringBuffer sb = new StringBuffer();
             for (int i = 0; i < hash.length; i++) {
@@ -95,6 +108,13 @@ public class AemsUser {
             ex.printStackTrace();
         }
         return null;
+    }
+    
+    /**
+     * @see #createAuthString(Integer, String, String, String)
+     */
+    public static String createAuthString(AemsUser user, String salt) {
+        return createAuthString(user.getUserId(), user.getUsername(), user.getPassword(), salt);
     }
 
 }
