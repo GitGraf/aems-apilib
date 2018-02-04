@@ -59,7 +59,7 @@ public class AemsLoginAction extends AbstractAemsAction {
     @Override
     public JsonElement serializeData() {
         JsonObject obj = new JsonObject();
-        obj.addProperty("usr", username);
+        obj.addProperty("user", username);
         obj.addProperty("auth_str", getAuthString());
         obj.addProperty("salt", salt);
         return obj;
