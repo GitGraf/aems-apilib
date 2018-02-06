@@ -115,7 +115,7 @@ public class AemsResponse {
         String json = decryptFirst ? getDecryptedResponse() : getResponseText();
         try {
             return new JsonParser().parse(json).getAsJsonArray();
-        } catch(JsonParseException | IllegalStateException e) {
+        } catch(Exception e) {
             return null;
         }
     }
@@ -130,7 +130,7 @@ public class AemsResponse {
         String json = decryptFirst ? getDecryptedResponse() : getResponseText();
         try {
             return new JsonParser().parse(json).getAsJsonObject();
-        } catch(JsonParseException | IllegalStateException e) {
+        } catch(Exception e) {
             return null;
         }
     }
