@@ -39,22 +39,20 @@ public final class AemsAPI {
     }
 
     /**
-     * Dispatches a HTTP request to the {@link #BASE_URL} and returns the plain-text
-     * result. The body will automatically be encrypted with the encryption key.
-     * 
-     * @param action
-     *            The {@link AbstractAemsAction} to be executed
-     * @param encryptionKey
-     *            The key to be used for encrypting sensitive data
-     * @return The response of the HTTP call
-     * @throws IOException
-     *             If an I/O Exception occures (e.g. malformed url)
+     * @deprecated Use {@link #call0(AbstractAemsAction, byte[])}
      */
     public static String call(AbstractAemsAction action, byte[] encryptionKey) throws IOException {
         AemsResponse response = call0(action, encryptionKey);
         return response.getResponseText();
     }
     
+    /**
+     * Dispatches a HTTP request against the AEMS-API. 
+     * @param action The {@link AbstractAemsAction} holding the data for the request 
+     * @param encryptionKey The key to be used for encrypting the data
+     * @return {@link AemsResponse}
+     * @throws IOException If an exception occurs
+     */
     public static AemsResponse call0(AbstractAemsAction action, byte[] encryptionKey) throws IOException {
         if (BASE_URL == null)
             throw new IllegalStateException("Base URL cannot be null! Set it using AemsAPI.setUrl(url)");

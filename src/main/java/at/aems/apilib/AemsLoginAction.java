@@ -60,13 +60,20 @@ public class AemsLoginAction extends AbstractAemsAction {
     public JsonElement serializeData() {
         JsonObject obj = new JsonObject();
         obj.addProperty("user", username);
-        obj.addProperty("auth_str", getAuthString());
+        obj.addProperty("auth_str", getAuthString(username, password, salt));
         obj.addProperty("salt", salt);
         return obj;
     }
 
-    private String getAuthString() {
-        String userCredentials = password + ":" + salt;
+    /**
+     * This method is used to generate the authentication string for login purposes
+     * @param username The username
+     * @param password The password
+     * @param salt The (optional) salt
+     * @return The SHA-512 authentication hash string
+     */
+    public static String getAuthString(String username, String password, String salt) {
+        String userCredentials = username + ":" + password + ":" + salt;
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-512");
             byte[] hash = md.digest(userCredentials.getBytes(StandardCharsets.UTF_8));
