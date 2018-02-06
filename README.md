@@ -18,12 +18,18 @@ This configuration will dispatch a query to the API. The sensitive data will be 
 }
 ``` 
 # Calling the REST Service
-You can make use of the static methods of the `AemsAPI` class to communicate with the REST service. You need to supply your `AemsAction` object as well as the shared secret key. The method will do the request and return the (encrypted) response. The response is encrypted with the shared secret key, which means that you are able to decrypt it.
+You can make use of the static methods of the `AemsAPI` class to communicate with the REST service. You need to supply your `AemsAction` object as well as the shared secret key.
 ```java
 AemsAPI.setUrl("https://api.aems.at");
-String response = AemsAPI.call(action, sharedSecretKey);
-// You can make use of the Decrypter class in AEMSUtilLib
-String decrypted = Decrypter.requestDecryption(sharedSecretKey, response.getBytes());
+// [deprecated] String response = AemsAPI.call(action, sharedSecretKey);
+AemsResponse response = AemsAPI.call0(action, sharedSecretKey);
+int httpCode = response.getResponseCode();
+String text = response.getResponseText();
+String decryptedText = response.getDecryptedResponse();
+        
+// If the response text is a JsonElement:
+JsonObject responseObj = response.getAsJsonObject(true);    // if response text is encrypted, pass "true"
+JsonArray responseArr = response.getAsJsonArray(true);
 ```
 
 # Examples (not completely up-to-date!)
