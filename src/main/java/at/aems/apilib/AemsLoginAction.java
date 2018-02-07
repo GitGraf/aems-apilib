@@ -73,21 +73,7 @@ public class AemsLoginAction extends AbstractAemsAction {
      * @return The SHA-512 authentication hash string
      */
     public static String getAuthString(String username, String password, String salt) {
-        String userCredentials = username + ":" + password + ":" + salt;
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA-512");
-            byte[] hash = md.digest(userCredentials.getBytes(StandardCharsets.UTF_8));
-
-            StringBuffer sb = new StringBuffer();
-            for (int i = 0; i < hash.length; i++) {
-                sb.append(Integer.toString((hash[i] & 0xff) + 0x100, 16).substring(1));
-            }
-            return sb.toString();
-
-        } catch (NoSuchAlgorithmException ex) {
-            ex.printStackTrace();
-        }
-        return null;
+        return AemsUser.createAuthString(username, password, salt);
     }
 
     private String createSalt() {
