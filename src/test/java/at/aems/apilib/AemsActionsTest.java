@@ -12,7 +12,7 @@ import at.aems.apilib.crypto.EncryptionType;
 
 public class AemsActionsTest {
 
-    /*
+    
     private AemsUser testUser = new AemsUser(0, "Test", "user");
     private byte[] testKey = new byte[16];
 
@@ -74,5 +74,5 @@ public class AemsActionsTest {
         insert.disableSalt();
         obj = insert.toJsonObject();
         assertFalse("Action should not have a salt attribute", obj.has("salt"));
-    } */
+    } 
 }
