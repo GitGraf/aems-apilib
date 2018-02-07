@@ -90,8 +90,8 @@ public class AemsUser {
      * @param salt Optional salt to be added
      * @return The authentication string
      */
-    public static String createAuthString(Integer userId, String username, String password, String salt) {
-        String userCredentials = userId + ":" + username + ":" + password;
+    public static String createAuthString(String username, String password, String salt) {
+        String userCredentials = username + ":" + password;
         if (salt != null && !salt.isEmpty()) {
             userCredentials = userCredentials + ":" + salt;
         }
@@ -114,7 +114,7 @@ public class AemsUser {
      * @see #createAuthString(Integer, String, String, String)
      */
     public static String createAuthString(AemsUser user, String salt) {
-        return createAuthString(user.getUserId(), user.getUsername(), user.getPassword(), salt);
+        return createAuthString(user.getUsername(), user.getPassword(), salt);
     }
 
 }
