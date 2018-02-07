@@ -15,9 +15,6 @@
 */
 package at.aems.apilib;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Random;
 
@@ -39,7 +36,6 @@ public class AemsLoginAction extends AbstractAemsAction {
 
     /**
      * Sets the username to be used for logging in.
-     * 
      * @param user
      *            The username
      */
@@ -49,7 +45,6 @@ public class AemsLoginAction extends AbstractAemsAction {
 
     /**
      * Sets the password to be used for logging in.
-     * 
      * @param pass
      */
     public void setPassword(String pass) {

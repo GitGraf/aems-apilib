@@ -128,8 +128,11 @@ public class AemsResponse {
      */
     public JsonArray getAsJsonArray(boolean decryptFirst) {
         String json = decryptFirst ? getDecryptedResponse() : getResponseText();
+        
         try {
-            return new JsonParser().parse(json).getAsJsonArray();
+            JsonObject o = new JsonParser().parse(json).getAsJsonObject();
+            String firstKey = o.keySet().iterator().next();
+            return o.get(firstKey).getAsJsonArray();
         } catch(Exception e) {
             return null;
         }
