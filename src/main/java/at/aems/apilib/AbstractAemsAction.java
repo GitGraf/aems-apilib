@@ -56,7 +56,7 @@ public abstract class AbstractAemsAction {
     public AbstractAemsAction(AemsUser user, String action, EncryptionType encryption) {
         this.user = user;
         this.action = action;
-        this.saltEnabled = false;
+        this.saltEnabled = true;
         this.encryptionType = encryption;
         builder = new GsonBuilder().setPrettyPrinting().serializeNulls().disableHtmlEscaping() // In order to keep gson
                                                                                                // from serializing '='
