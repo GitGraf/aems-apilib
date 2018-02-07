@@ -76,9 +76,19 @@ public abstract class AbstractAemsAction {
         if (user != null) {
             serializeUserCredentials(object);
         }
+        
         object.addProperty("action", action);
         JsonElement data = serializeData();
-        object.add("data", data);
+        
+        if("LOGIN".equals(action)) {
+            object.addProperty("user", data.getAsJsonObject().get("user").getAsString());
+            object.addProperty("auth_str", data.getAsJsonObject().get("auth_str").getAsString());
+            object.addProperty("salt", data.getAsJsonObject().get("salt").getAsString());
+            object.add("data", new JsonObject());  
+        } else {
+            object.add("data", data);
+        }
+
         object.addProperty("encryption", encryptionType.name());
         return object;
     }

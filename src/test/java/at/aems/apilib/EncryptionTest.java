@@ -15,6 +15,7 @@ public class EncryptionTest {
     private AemsUser testUser = new AemsUser(0, "Test", "user");
     private byte[] testKey = new byte[16];
 
+    /*
     @Test
     public void testAes() {
         AemsQueryAction action = new AemsQueryAction(testUser, EncryptionType.AES);
@@ -41,5 +42,5 @@ public class EncryptionTest {
 
     private static JsonObject toJsonObject(String s) {
         return new JsonParser().parse(s).getAsJsonObject();
-    }
+    } */
 }

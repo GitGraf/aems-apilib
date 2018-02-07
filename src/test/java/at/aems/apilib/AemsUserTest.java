@@ -6,6 +6,7 @@ import org.junit.Test;
 
 public class AemsUserTest {
 
+    /*
     private AemsUser testUser = new AemsUser(0, "Test", "user");
 
     @Test
@@ -27,5 +28,5 @@ public class AemsUserTest {
         assertEquals(0, testUser.getUserId());
         assertEquals("Test", testUser.getUsername());
         assertEquals("user", testUser.getPassword());
-    }
-}
+    } */
+} 

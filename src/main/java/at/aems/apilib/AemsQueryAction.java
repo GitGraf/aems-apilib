@@ -42,6 +42,10 @@ public class AemsQueryAction extends AbstractAemsAction {
     public JsonElement serializeData() {
         return new JsonPrimitive(graphQlQuery);
     }
+    
+    public String getQuery() {
+        return this.graphQlQuery;
+    }
 
     @Override
     public String getHttpVerb() {

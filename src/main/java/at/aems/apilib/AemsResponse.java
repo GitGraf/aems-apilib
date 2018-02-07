@@ -15,12 +15,14 @@
 */
 package at.aems.apilib;
 
+import java.util.Base64;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 
+import at.aems.apilib.crypto.Decrypter;
 import at.aems.apilib.crypto.EncryptionType;
 
 public class AemsResponse {
@@ -60,8 +62,10 @@ public class AemsResponse {
     }
     
     /**
-     * Returns the (encrypted) response body. In the case of AEMS, it's likely to be some sort
-     * of JSON structure. Use {@link #getDecryptedResponse(EncryptionType, byte[])} to decrypt
+     * Returns the (encrypted and encoded) response body.
+     * In the case of AEMS, it's likely to be some sort
+     * of JSON structure. Use {@link #getDecryptedResponse(EncryptionType, byte[])} to 
+     * decrypt and decode
      * @return The response text
      */
     public String getResponseText() {
@@ -82,7 +86,6 @@ public class AemsResponse {
         return encryptionKey;
     }
     
-    
     /**
      * Returns the decrypted version of the response body ({@link #getResponseText()}).
      * @return The decrypted response
@@ -91,8 +94,37 @@ public class AemsResponse {
         if(responseText == null) {
             return "";
         }
-        byte[] decrypted = type.getImplementation().decrypt(encryptionKey, responseText.getBytes());
+        // Start with possibly encrypted and encoded byte array
+        byte[] decrypted = responseText.getBytes();
+        if(isEncoded()) {
+            // If response is Base64 encoded - decode
+            decrypted = Base64.getUrlDecoder().decode(decrypted);
+        }
+        if(type == EncryptionType.AES) {
+            // If response is AES encrypted - decrypt
+            // If response is NOT aes encrypted but type is set to 
+            // EncryptionType.AES, this will break (throw exception)
+            decrypted = decrypt(decrypted);
+        }
+        
         return new String(decrypted);
+    }
+    
+    private byte[] decrypt(byte[] decrypted) {
+        try {
+            return Decrypter.requestDecryption(encryptionKey, decrypted);
+        } catch(Exception ex) {
+            return decrypted;
+        }
+    }
+    
+    private boolean isEncoded() {
+        try {
+            Base64.getUrlDecoder().decode(responseText);
+            return true;
+        } catch(Exception e) {
+            return false;
+        }
     }
     
     /**
@@ -108,8 +140,8 @@ public class AemsResponse {
      * @return The error message which is wrapped in the response body, or {@code null}
      * if the message is not an error.
      */
-    public String getErrorMessage(boolean decryptFirst) {
-        JsonObject error = getAsJsonObject(decryptFirst);
+    public String getErrorMessage() {
+        JsonObject error = getAsJsonObject();
         if(error == null)
             return null;
         
@@ -126,13 +158,10 @@ public class AemsResponse {
      * will be returned
      * @return The response as JsonArray
      */
-    public JsonArray getAsJsonArray(boolean decryptFirst) {
-        String json = decryptFirst ? getDecryptedResponse() : getResponseText();
-        
+    public JsonArray getAsJsonArray() {
+        String json = getDecryptedResponse();
         try {
-            JsonObject o = new JsonParser().parse(json).getAsJsonObject();
-            String firstKey = o.keySet().iterator().next();
-            return o.get(firstKey).getAsJsonArray();
+            return new JsonParser().parse(json).getAsJsonArray();
         } catch(Exception e) {
             return null;
         }
@@ -142,15 +171,63 @@ public class AemsResponse {
      * Converts the decrypted response text into a {@link JsonObject} if possible.
      * If the response text cannot be converted into a {@link JsonObject}, {@code null}
      * will be returned
-     * @return The response as JsonObject
+     * @return The response as JsonObject, or {@code null} if the response is not a 
+     * Json Object
      */
-    public JsonObject getAsJsonObject(boolean decryptFirst) {
-        String json = decryptFirst ? getDecryptedResponse() : getResponseText();
+    public JsonObject getAsJsonObject() {
+        String json = getDecryptedResponse();
         try {
             return new JsonParser().parse(json).getAsJsonObject();
         } catch(Exception e) {
             return null;
         }
+    }
+    
+    /**
+     * Attemtps to fetch a JsonArray out of a response in the form of a JsonObject.
+     * This method is suitable if the response is shaped like this:
+     * <blockquote>
+     *  { <br/>
+     *    "arrayKey": ["Array", "Values", "Yay"]<br/>
+     *  }
+     * </blockquote>
+     * @param arrayKey The key of the JsonArray to be fetched. If {@code null}, the first
+     * key of the JsonObject will be used.
+     * @throws IllegalArgumentException If the response is malformed - Perhaps it is
+     * not a JsonObject or it does not contain the specified arrayKey
+     * @return The JsonArray within the JsonObject-Response that has the specified arrayKey
+     */
+    public JsonArray getJsonArrayWithinObject(String arrayKey) {
+        JsonObject object = getAsJsonObject();
+        if(object == null) {
+            throw new IllegalStateException("Response is not a JsonObject!");
+        }
+        
+        // check that the object has a key
+        if(object.keySet().isEmpty()) {
+            throw new IllegalStateException("Response is JsonObject but has no keys!");
+        }
+        
+        String firstKey = object.keySet().iterator().next();
+        // If parameter arrayKey is null, use firstKey
+        String keyToUse = arrayKey == null ? firstKey : arrayKey;
+        
+        if(!object.has(keyToUse) || !object.get(keyToUse).isJsonArray()) {
+            throw new IllegalStateException("Error when fetching JsonArray '" + keyToUse + "'. "
+                    + "Did you specify the correct key and is the element with that key really a JsonArray?");
+        }
+        
+        return object.get(keyToUse).getAsJsonArray();
+        
+    }
+    
+    /**
+     * Convenience method. This call is equivalent to the call
+     * {@code getJsonArrayWithinObject(null)}
+     * @return
+     */
+    public JsonArray getJsonArrayWithinObject() {
+        return getJsonArrayWithinObject(null);
     }
     
 }
