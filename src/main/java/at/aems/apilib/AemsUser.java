@@ -21,7 +21,6 @@ import java.security.NoSuchAlgorithmException;
 
 /**
  * This class is used to represent user credentials in the AEMS system.
- * 
  * @author Niggi
  */
 public class AemsUser {

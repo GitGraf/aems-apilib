@@ -26,6 +26,7 @@ public class AemsRegisterAction extends AbstractAemsAction {
     private String password;
     private String email;
     private String postalCode;
+    private boolean netzOnline;
 
     public AemsRegisterAction(EncryptionType encryption) {
         super(null, "REGISTER", encryption);
@@ -63,6 +64,14 @@ public class AemsRegisterAction extends AbstractAemsAction {
         this.postalCode = code;
     }
 
+    public boolean isNetzOnline() {
+        return netzOnline;
+    }
+
+    public void setNetzOnline(boolean netzOnline) {
+        this.netzOnline = netzOnline;
+    }
+
     @Override
     public JsonElement serializeData() {
         JsonObject object = new JsonObject();
@@ -70,6 +79,7 @@ public class AemsRegisterAction extends AbstractAemsAction {
         object.addProperty("password", password);
         object.addProperty("email", email);
         object.addProperty("postcode", postalCode);
+        object.addProperty("is_netzonline", netzOnline);
         return object;
     }
 
