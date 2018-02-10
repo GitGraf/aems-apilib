@@ -110,7 +110,7 @@ public class AemsUser {
     }
     
     /**
-     * @see #createAuthString(Integer, String, String, String)
+     * @see #createAuthString(String, String, String)
      */
     public static String createAuthString(AemsUser user, String salt) {
         return createAuthString(user.getUsername(), user.getPassword(), salt);

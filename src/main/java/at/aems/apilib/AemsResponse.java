@@ -96,20 +96,29 @@ public class AemsResponse {
         }
         // Start with possibly encrypted and encoded byte array
         byte[] decrypted = responseText.getBytes();
-        if(isEncoded()) {
+        if(isEncoded(decrypted)) {
             // If response is Base64 encoded - decode
             decrypted = Base64.getUrlDecoder().decode(decrypted);
         }
-        if(type == EncryptionType.AES) {
+        if(isEncrypted(decrypted)) {
             // If response is AES encrypted - decrypt
-            // If response is NOT aes encrypted but type is set to 
-            // EncryptionType.AES, this will break (throw exception)
             decrypted = decrypt(decrypted);
         }
         
         return new String(decrypted);
     }
     
+    private boolean isEncrypted(byte[] arr) {
+        if(type == EncryptionType.SSL)
+            return false;
+        try {
+            Decrypter.requestDecryption(encryptionKey, arr);
+            return true;
+        } catch(Exception ex) {
+            return false;
+        }
+    }
+
     private byte[] decrypt(byte[] decrypted) {
         try {
             return Decrypter.requestDecryption(encryptionKey, decrypted);
@@ -118,9 +127,9 @@ public class AemsResponse {
         }
     }
     
-    private boolean isEncoded() {
+    private boolean isEncoded(byte[] arr) {
         try {
-            Base64.getUrlDecoder().decode(responseText);
+            Base64.getUrlDecoder().decode(arr);
             return true;
         } catch(Exception e) {
             return false;
