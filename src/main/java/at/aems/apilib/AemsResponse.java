@@ -15,6 +15,8 @@
 */
 package at.aems.apilib;
 
+import java.nio.charset.StandardCharsets;
+
 import org.apache.commons.codec.binary.Base64;
 
 import com.google.gson.JsonArray;
@@ -95,7 +97,7 @@ public class AemsResponse {
             return "";
         }
         // Start with possibly encrypted and encoded byte array
-        byte[] decrypted = responseText.getBytes();
+        byte[] decrypted = responseText.getBytes(StandardCharsets.UTF_8);
         if(isEncoded(decrypted)) {
             // If response is Base64 encoded - decode
             decrypted = Base64.decodeBase64(decrypted);
@@ -105,7 +107,7 @@ public class AemsResponse {
             decrypted = decrypt(decrypted);
         }
         
-        return new String(decrypted);
+        return new String(decrypted, StandardCharsets.UTF_8);
     }
     
     private boolean isEncrypted(byte[] arr) {
