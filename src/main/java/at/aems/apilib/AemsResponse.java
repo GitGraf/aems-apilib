@@ -15,7 +15,7 @@
 */
 package at.aems.apilib;
 
-import java.util.Base64;
+import org.apache.commons.codec.binary.Base64;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -98,7 +98,7 @@ public class AemsResponse {
         byte[] decrypted = responseText.getBytes();
         if(isEncoded(decrypted)) {
             // If response is Base64 encoded - decode
-            decrypted = Base64.getUrlDecoder().decode(decrypted);
+            decrypted = Base64.decodeBase64(decrypted);
         }
         if(isEncrypted(decrypted)) {
             // If response is AES encrypted - decrypt
@@ -129,7 +129,7 @@ public class AemsResponse {
     
     private boolean isEncoded(byte[] arr) {
         try {
-            Base64.getUrlDecoder().decode(arr);
+            Base64.decodeBase64(arr);
             return true;
         } catch(Exception e) {
             return false;

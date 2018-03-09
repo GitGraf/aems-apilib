@@ -21,6 +21,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.security.ProtectionDomain;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLSession;
 
 /**
  * Provides static convenience methods to interact with the API.
@@ -29,13 +34,29 @@ import java.net.URL;
  */
 public final class AemsAPI {
 
-    private AemsAPI() {
+    private AemsAPI() { 
     }
-
-    private static String BASE_URL = null;
+    
+    private static ApiConfig config = new ApiConfig();
 
     public static void setUrl(String url) {
-        BASE_URL = url;
+        config.setBaseUrl(url);
+    }
+    
+    public static void setTimeout(int timeout) {
+        config.setTimeout(timeout);
+    }
+    
+    public static void setCertPath(String certPath) {
+        config.setCertPath(certPath);
+    }
+    
+    public static void setCertPassword(String certPwd) {
+        config.setCertPassword(certPwd);
+    }
+    
+    public static void setConfig(ApiConfig c) {
+        config = c;
     }
 
     /**
@@ -54,15 +75,29 @@ public final class AemsAPI {
      * @throws IOException If an exception occurs
      */
     public static AemsResponse call0(AbstractAemsAction action, byte[] encryptionKey) throws IOException {
-        if (BASE_URL == null)
-            throw new IllegalStateException("Base URL cannot be null! Set it using AemsAPI.setUrl(url)");
+        final String BASE_URL = config.getBaseUrl();
+        
+        checkNotNull(config.getBaseUrl(), "Base URL cannot be null! AemsAPI.setUrl()");
+        checkNotNull(config.getCertPath(), "CertPath cannot be null! AemsAPI.setCertPath()");
+        checkNotNull(config.getCertPassword(), "CertPassword cannot be null! AemsAPI.setCertPassword()");
 
-        HttpURLConnection connection;
+        System.setProperty("javax.net.ssl.trustStore", config.getCertPath());
+        System.setProperty("javax.net.ssl.trustStorePassword", config.getCertPassword());
+        
+        HttpsURLConnection connection;
         URL apiUrl = new URL(BASE_URL);
         String encryptedJson = action.toJson(encryptionKey);
-        connection = (HttpURLConnection) apiUrl.openConnection();
+        connection = (HttpsURLConnection) apiUrl.openConnection();
+        
+        connection.setHostnameVerifier(new HostnameVerifier() {
+            public boolean verify(String hostname, SSLSession session) {
+                return true;
+            }
+        });
 
         connection.setRequestMethod(action.getHttpVerb());
+        if(config.getTimeout() != null)
+            connection.setConnectTimeout(config.getTimeout());
         connection.setRequestProperty("Content-Type", "application/json");
         connection.setRequestProperty("Content-Length", Integer.toString(encryptedJson.length()));
         connection.setDoOutput(true);
@@ -70,12 +105,24 @@ public final class AemsAPI {
 
         connection.connect();
         
-        String rawResult = readDataFromStream(connection.getInputStream());
+        String rawResult = "";
+        try {
+            rawResult = readDataFromStream(connection.getInputStream());
+        } catch(IOException e) {
+            // yes
+        }
+        
         return new AemsResponse(connection.getResponseCode(), 
                 connection.getResponseMessage(), 
                 rawResult,
                 action.getEncryptionType(),
                 encryptionKey);
+    }
+    
+    private static void checkNotNull(Object object, String msg) {
+        if(object == null) {
+            throw new IllegalArgumentException(msg);
+        }
     }
 
     private static String readDataFromStream(InputStream stream) throws IOException {

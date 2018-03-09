@@ -15,7 +15,7 @@
 */
 package at.aems.apilib.crypto;
 
-import java.util.Base64;
+import org.apache.commons.codec.binary.Base64;
 
 /**
  * This class provides functionality as an AES en/decoder
@@ -36,7 +36,7 @@ public class CryptoSsl extends AemsCrypto {
      */
     @Override
     public byte[] encrypt(byte[] key, byte[] raw) {
-        return Base64.getUrlEncoder().encode(raw);
+        return Base64.encodeBase64(raw);
     }
 
     /**
@@ -51,7 +51,7 @@ public class CryptoSsl extends AemsCrypto {
      */
     @Override
     public byte[] decrypt(byte[] key, byte[] raw) {
-        return Base64.getUrlDecoder().decode(raw);
+        return Base64.decodeBase64(raw);
     }
 
 }

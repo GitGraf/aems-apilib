@@ -16,8 +16,9 @@
 package at.aems.apilib;
 
 import java.security.SecureRandom;
-import java.util.Base64;
 import java.util.Random;
+
+import org.apache.commons.codec.binary.Base64;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.GsonBuilder;
@@ -135,7 +136,7 @@ public abstract class AbstractAemsAction {
 
     private String bytesToString(byte[] bytes) {
         if (encryptionType != EncryptionType.SSL) {
-            return Base64.getUrlEncoder().encodeToString(bytes);
+            return Base64.encodeBase64URLSafeString(bytes);
         }
         return new String(bytes);
     }
