@@ -78,12 +78,14 @@ public final class AemsAPI {
         final String BASE_URL = config.getBaseUrl();
         
         checkNotNull(config.getBaseUrl(), "Base URL cannot be null! AemsAPI.setUrl()");
-        checkNotNull(config.getCertPath(), "CertPath cannot be null! AemsAPI.setCertPath()");
-        checkNotNull(config.getCertPassword(), "CertPassword cannot be null! AemsAPI.setCertPassword()");
+//       checkNotNull(config.getCertPath(), "CertPath cannot be null! AemsAPI.setCertPath()");
+//        checkNotNull(config.getCertPassword(), "CertPassword cannot be null! AemsAPI.setCertPassword()");
 
-        System.setProperty("javax.net.ssl.trustStore", config.getCertPath());
-        System.setProperty("javax.net.ssl.trustStorePassword", config.getCertPassword());
-        
+        if(config.getCertPath() != null) {
+            System.setProperty("javax.net.ssl.trustStore", config.getCertPath());
+            System.setProperty("javax.net.ssl.trustStorePassword", config.getCertPassword());
+        }
+         
         HttpsURLConnection connection;
         URL apiUrl = new URL(BASE_URL);
         String encryptedJson = action.toJson(encryptionKey);
