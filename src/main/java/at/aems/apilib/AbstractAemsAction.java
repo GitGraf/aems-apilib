@@ -136,7 +136,7 @@ public abstract class AbstractAemsAction {
 
     private String bytesToString(byte[] bytes) {
         if (encryptionType != EncryptionType.SSL) {
-            return Base64.encodeBase64URLSafeString(bytes);
+            return Base64.encodeBase64String(bytes);
         }
         return new String(bytes);
     }
