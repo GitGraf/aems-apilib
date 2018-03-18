@@ -41,7 +41,7 @@
 						<relocations>
 							<relocation>
 								<pattern>org.apache.commons.codec</pattern>
-								<shadedPattern>org.apache.commons.luggi.codec</shadedPattern>
+								<shadedPattern>org.apache.commons.codec.android</shadedPattern>
 							</relocation>
 						</relocations>
 							<artifactSet>
