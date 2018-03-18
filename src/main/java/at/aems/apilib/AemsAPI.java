@@ -21,11 +21,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.security.ProtectionDomain;
+import java.net.URLConnection;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 /**
  * Provides static convenience methods to interact with the API.
@@ -86,17 +89,20 @@ public final class AemsAPI {
             System.setProperty("javax.net.ssl.trustStorePassword", config.getCertPassword());
         }
          
-        HttpsURLConnection connection;
+        HttpURLConnection connection;
         URL apiUrl = new URL(BASE_URL);
         String encryptedJson = action.toJson(encryptionKey);
-        connection = (HttpsURLConnection) apiUrl.openConnection();
+        connection = (HttpURLConnection) apiUrl.openConnection();
         
-        connection.setHostnameVerifier(new HostnameVerifier() {
-            public boolean verify(String hostname, SSLSession session) {
-                return true;
-            }
-        });
-
+        if(BASE_URL.startsWith("https://")) {
+            ((HttpsURLConnection) connection).setHostnameVerifier(new HostnameVerifier() {
+                @Override
+                public boolean verify(String hostname, SSLSession session) {
+                    return true;
+                }
+            });
+        }
+        
         connection.setRequestMethod(action.getHttpVerb());
         if(config.getTimeout() != null)
             connection.setConnectTimeout(config.getTimeout());
