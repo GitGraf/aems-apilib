@@ -22,6 +22,8 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -70,7 +72,7 @@ public final class AemsAPI {
         return response.getResponseText();
     }
     
-    /**
+    /** 
      * Dispatches a HTTP request against the AEMS-API. 
      * @param action The {@link AbstractAemsAction} holding the data for the request 
      * @param encryptionKey The key to be used for encrypting the data
@@ -88,10 +90,11 @@ public final class AemsAPI {
             System.setProperty("javax.net.ssl.trustStore", config.getCertPath());
             System.setProperty("javax.net.ssl.trustStorePassword", config.getCertPassword());
         }
-         
+        
         HttpURLConnection connection;
         URL apiUrl = new URL(BASE_URL);
         String encryptedJson = action.toJson(encryptionKey);
+        
         connection = (HttpURLConnection) apiUrl.openConnection();
         
         if(BASE_URL.startsWith("https://")) {
@@ -118,7 +121,7 @@ public final class AemsAPI {
             rawResult = readDataFromStream(connection.getInputStream());
         } catch(IOException e) {
             // yes
-        }
+        } 
         
         return new AemsResponse(connection.getResponseCode(), 
                 connection.getResponseMessage(), 
@@ -133,7 +136,7 @@ public final class AemsAPI {
         }
     }
 
-    private static String readDataFromStream(InputStream stream) throws IOException {
+    public static String readDataFromStream(InputStream stream) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
         StringBuffer buffer = new StringBuffer();
         String line;

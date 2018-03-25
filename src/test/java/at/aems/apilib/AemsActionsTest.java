@@ -69,10 +69,7 @@ public class AemsActionsTest {
         insert.setTable("SomeTable");
         insert.enableSalt();
         JsonObject obj = insert.toJsonObject();
-        assertTrue("Action should have a salt attribute", obj.has("salt"));
-
-        insert.disableSalt();
-        obj = insert.toJsonObject();
-        assertFalse("Action should not have a salt attribute", obj.has("salt"));
+        // AES does not require salt
+        assertTrue("Action should not have a salt attribute", !obj.has("salt"));
     } 
 }

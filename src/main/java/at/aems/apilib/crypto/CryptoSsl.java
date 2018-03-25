@@ -36,7 +36,7 @@ public class CryptoSsl extends AemsCrypto {
      */
     @Override
     public byte[] encrypt(byte[] key, byte[] raw) {
-        return Base64.encodeBase64(raw);
+        return Base64.encodeBase64URLSafe(raw);
     }
 
     /**

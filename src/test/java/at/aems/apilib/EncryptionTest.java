@@ -40,7 +40,7 @@ public class EncryptionTest {
         AemsQueryAction action = new AemsQueryAction(testUser, EncryptionType.SSL);
         action.setQuery("QUERY-adofnewidf");
 
-        String expected = "UVVFUlktYWRvZm5ld2lkZg==";
+        String expected = "UVVFUlktYWRvZm5ld2lkZg";
         String json = action.toJson(testKey);
 
         JsonObject o = toJsonObject(json);

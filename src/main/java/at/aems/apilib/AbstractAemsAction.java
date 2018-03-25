@@ -97,7 +97,7 @@ public abstract class AbstractAemsAction {
     private JsonObject serializeUserCredentials(JsonObject object) {
         object.addProperty("user", user.getUserId());
         String salt = isSaltEnabled() ? createSalt() : null;
-        if (isSaltEnabled()) {
+        if (isSaltEnabled() && encryptionType == EncryptionType.SSL) {
             object.addProperty("salt", salt);
         }
         object.addProperty("auth_str", user.getAuthString(salt));
@@ -136,7 +136,7 @@ public abstract class AbstractAemsAction {
 
     private String bytesToString(byte[] bytes) {
         if (encryptionType != EncryptionType.SSL) {
-            return Base64.encodeBase64String(bytes);
+            return Base64.encodeBase64URLSafeString(bytes);
         }
         return new String(bytes);
     }
