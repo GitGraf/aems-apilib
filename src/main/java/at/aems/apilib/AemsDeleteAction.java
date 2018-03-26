@@ -30,6 +30,11 @@ public class AemsDeleteAction extends AbstractAemsAction {
     public AemsDeleteAction(AemsUser user, EncryptionType encryption) {
         super(user, "DELETE", encryption);
     }
+    
+    
+    public AemsDeleteAction(AemsUser user) {
+        this(user, EncryptionType.SSL);
+    }
 
     /**
      * This method is used to set the name of the database table that this action
@@ -78,6 +83,7 @@ public class AemsDeleteAction extends AbstractAemsAction {
 
     @Override
     public String getHttpVerb() {
+        // HTTP method DELETE doesn't support output
         return "DELETE";
     }
 

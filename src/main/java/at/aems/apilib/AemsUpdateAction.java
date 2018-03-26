@@ -35,6 +35,10 @@ public class AemsUpdateAction extends AbstractAemsAction {
         super(user, "UPDATE", encryption);
         updateData = new HashMap<String, Object>();
     }
+    
+    public AemsUpdateAction(AemsUser user) {
+        this(user, EncryptionType.SSL);
+    }
 
     /**
      * This method is used to set the name of the database table that this action

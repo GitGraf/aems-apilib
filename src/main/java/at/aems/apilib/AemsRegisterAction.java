@@ -31,6 +31,10 @@ public class AemsRegisterAction extends AbstractAemsAction {
     public AemsRegisterAction(EncryptionType encryption) {
         super(null, "REGISTER", encryption);
     }
+    
+    public AemsRegisterAction() {
+        this(EncryptionType.SSL);
+    }
 
     public String getUsername() {
         return username;

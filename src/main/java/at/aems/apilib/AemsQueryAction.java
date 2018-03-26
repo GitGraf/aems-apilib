@@ -27,6 +27,10 @@ public class AemsQueryAction extends AbstractAemsAction {
     public AemsQueryAction(AemsUser user, EncryptionType encryption) {
         super(user, "QUERY", encryption);
     }
+    
+    public AemsQueryAction(AemsUser user) {
+        this(user, EncryptionType.SSL);
+    }
 
     /**
      * This method is used to set the GraphQL query which will be sent to the API.

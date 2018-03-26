@@ -22,6 +22,10 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -43,6 +47,7 @@ public final class AemsAPI {
     }
     
     private static ApiConfig config = new ApiConfig();
+    private static ExecutorService executor = Executors.newSingleThreadExecutor();
 
     public static void setUrl(String url) {
         config.setBaseUrl(url);
@@ -97,6 +102,9 @@ public final class AemsAPI {
         
         connection = (HttpURLConnection) apiUrl.openConnection();
         
+        /*
+         * We will let that be for now. Android certificate problems
+         * 
         if(BASE_URL.startsWith("https://")) {
             ((HttpsURLConnection) connection).setHostnameVerifier(new HostnameVerifier() {
                 @Override
@@ -105,6 +113,7 @@ public final class AemsAPI {
                 }
             });
         }
+        */
         
         connection.setRequestMethod(action.getHttpVerb());
         if(config.getTimeout() != null)
@@ -113,12 +122,18 @@ public final class AemsAPI {
         connection.setRequestProperty("Content-Length", Integer.toString(encryptedJson.length()));
         connection.setDoOutput(true);
         connection.getOutputStream().write(encryptedJson.getBytes("UTF-8"));
-
+        connection.getOutputStream().flush();
+        
         connection.connect();
         
         String rawResult = "";
         try {
-            rawResult = readDataFromStream(connection.getInputStream());
+            if(connection.getResponseCode() == 200) {
+                rawResult = readDataFromStream(connection.getInputStream());
+            } else {
+                rawResult = readDataFromStream(connection.getErrorStream());
+            }
+            
         } catch(IOException e) {
             // yes
         } 
@@ -128,6 +143,15 @@ public final class AemsAPI {
                 rawResult,
                 action.getEncryptionType(),
                 encryptionKey);
+    }
+    
+    public static Future<AemsResponse> callAsync(final AbstractAemsAction action, final byte[] encryptionKey) {
+        return executor.submit(new Callable<AemsResponse>() {
+            @Override
+            public AemsResponse call() throws Exception {
+                return call0(action, encryptionKey);
+            }
+        });
     }
     
     private static void checkNotNull(Object object, String msg) {

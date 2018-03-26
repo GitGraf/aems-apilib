@@ -33,6 +33,10 @@ public class AemsLoginAction extends AbstractAemsAction {
         super(null, "LOGIN", encryption);
         this.salt = createSalt();
     }
+    
+    public AemsLoginAction() {
+        this(EncryptionType.SSL);
+    }
 
     /**
      * Sets the username to be used for logging in.

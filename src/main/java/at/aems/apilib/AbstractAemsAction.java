@@ -64,6 +64,7 @@ public abstract class AbstractAemsAction {
                                                                                                // into '\u003d'
                 .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES);
     }
+    
 
     /**
      * Converts the current state of this action object to a {@link JsonObject}.

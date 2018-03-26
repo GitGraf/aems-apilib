@@ -36,6 +36,10 @@ public class AemsInsertAction extends AbstractAemsAction {
         super(user, "INSERT", encryption);
         insertData = new ArrayList<Map<String, Object>>();
     }
+    
+    public AemsInsertAction(AemsUser user) {
+        this(user, EncryptionType.SSL);
+    }
 
     /**
      * This method is used to set the name of the database table that this action
