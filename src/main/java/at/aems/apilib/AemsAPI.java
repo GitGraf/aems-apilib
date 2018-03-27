@@ -116,8 +116,11 @@ public final class AemsAPI {
         */
         
         connection.setRequestMethod(action.getHttpVerb());
-        if(config.getTimeout() != null)
+        if(config.getTimeout() != null) {
             connection.setConnectTimeout(config.getTimeout());
+            connection.setReadTimeout(config.getTimeout());
+        }
+            
         connection.setRequestProperty("Content-Type", "application/json");
         connection.setRequestProperty("Content-Length", Integer.toString(encryptedJson.length()));
         connection.setDoOutput(true);
