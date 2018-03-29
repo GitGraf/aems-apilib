@@ -36,6 +36,8 @@ public class AemsResponse {
     private EncryptionType type;
     private byte[] encryptionKey;
     
+    private Exception exception;
+    
     public AemsResponse(Integer responseCode, String responseMessage, String responseText,
             EncryptionType encryption, byte[] key) {
         this.responseCode = responseCode;
@@ -46,11 +48,17 @@ public class AemsResponse {
     }
 
     /**
-     * Returns the HTTP response code, like "200" for OK, or "404" for NOT FOUND.
+     * Returns the HTTP response code, like "200" for OK, or "404" for NOT FOUND. <br>
+     * <b>Note:</b> A response code of zero ("0") indicates that the
+     * connection timed out.
      * @return The HTTP response code
      */
     public Integer getResponseCode() {
         return responseCode;
+    }
+    
+    public void setResponseCode(Integer responseCode) {
+        this.responseCode = responseCode;
     }
 
     /**
@@ -74,6 +82,10 @@ public class AemsResponse {
         return responseText;
     }
     
+    public void setResponseText(String response) {
+        this.responseText = response;
+    }
+    
     /**
      * @return The encryption type which can be used for decrypting the response
      */
@@ -86,6 +98,34 @@ public class AemsResponse {
      */
     public byte[] getEncryptionKey() {
         return encryptionKey;
+    }
+    
+    /**
+     * Returns the exception that occured while performing the
+     * http request, if any.
+     * @return The exception which occured, or {@code null} if
+     * everything went well.
+     */
+    public Exception getExcetption() {
+        return this.exception;
+    }
+    
+    /**
+     * This method should be used if an exception occurs during the
+     * execution of an http request.
+     * @param ex The exception that was thrown.
+     */
+    public void setException(Exception ex) {
+        this.exception = ex;
+    }
+    
+    /**
+     * Returns {@code true} if the {@link #responseCode} for this response
+     * is 200 ("OK") and the http {@link #exception} was not set (= is {@code null})
+     * @return true if the response is OK, false otherwise
+     */
+    public boolean isOk() {
+        return this.responseCode != null && this.responseCode == 200 && this.exception == null;
     }
     
     /**
