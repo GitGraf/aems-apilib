@@ -19,13 +19,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-
-import sun.net.www.protocol.http.HttpURLConnection;
 
 /**
  * Provides static convenience methods to interact with the API.
@@ -112,9 +111,11 @@ public final class AemsAPI {
 
         
         final int connectionTimeout = config.getTimeout() != null ? config.getTimeout() : DEFAULT_TIMEOUT;
-        connection.setConnectTimeout(connectionTimeout);
+        System.setProperty("sun.net.client.defaultConnectTimeout", String.valueOf(connectionTimeout));
+        System.setProperty("sun.net.client.defaultReadTimeout", String.valueOf(connectionTimeout));
         connection.setReadTimeout(connectionTimeout);
-        
+        connection.setConnectTimeout(connectionTimeout);
+         
         connection.setRequestMethod(action.getHttpVerb());
         connection.setRequestProperty("Content-Type", "application/json");
         connection.setRequestProperty("Content-Length", Integer.toString(encryptedJson.length()));
