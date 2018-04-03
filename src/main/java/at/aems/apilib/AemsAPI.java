@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -139,10 +140,13 @@ public final class AemsAPI {
             response.setResponseCode(connection.getResponseCode());
             response.setResponseText(rawResult);
 
+        } catch(SocketTimeoutException e) {
+            response.setException(e);
+            response.setResponseMessage("Connection timed out (timeout=" + connectionTimeout + " ms)");
         } catch (IOException e) {
             response.setException(e);
         }
-
+ 
         return response;
 
     }

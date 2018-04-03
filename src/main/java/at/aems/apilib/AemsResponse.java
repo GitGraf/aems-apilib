@@ -86,6 +86,10 @@ public class AemsResponse {
         this.responseText = response;
     }
     
+    public void setResponseMessage(String responseMessage) {
+        this.responseMessage = responseMessage;
+    }
+    
     /**
      * @return The encryption type which can be used for decrypting the response
      */

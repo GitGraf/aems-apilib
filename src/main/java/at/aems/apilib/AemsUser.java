@@ -33,6 +33,8 @@ public class AemsUser {
         this.username = username;
         this.password = password;
     }
+    
+    public AemsUser() {}
 
     /**
      * Returns this users internal database id
